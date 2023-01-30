@@ -11,8 +11,7 @@ class Config:
     tg_bot: TgBot
 
 
-def load_config(path: str = None) -> Config:
+def load_config(path = None) -> Config:
     env = Env()
-    try:
-        env.read_env(path)
-        return Config(tg_bot = TgBot(token = ))
+    env.read_env(path)
+    return Config(tg_bot = TgBot(token = env('BOT_TOKEN')))
