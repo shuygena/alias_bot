@@ -24,7 +24,7 @@ async def process_rules_command(message: Message):
     await message.answer(LEXICON[message.text])
 
 async def process_game_command(message: Message): # todo
-    await message.answer(LEXICON['/game'])
+    await message.answer(LEXICON[message.text])
     await FSMFillForm.fill_teams_names.set()
 
 
@@ -44,7 +44,7 @@ async def warning_not_names(message: Message):
 
 def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(process_start_command, commands=['start'])
-    dp.register_message_handler(process_start_command, commands=['game'])
+    dp.register_message_handler(process_game_command, commands=['game'])
     dp.register_message_handler(process_help_command, commands=['help'])
     dp.register_message_handler(process_rules_command, commands=['rules'])
 
