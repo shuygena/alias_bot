@@ -1,7 +1,9 @@
 import asyncio
 import logging
 
+# from apscheduler.schedulers.asyncio import AsyncIOScheduler, scheduler
 from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from typing import Dict
 
 from config_data.config import Config, load_config # i need it?
@@ -23,9 +25,12 @@ async def main():
         format = u'%(filename)s:%(lineno)d #%(levelname)-8s '
                u'[%(asctime)s] - %(name)s - %(message)s')
     logger.info('Starting bot')
+    storage: MemoryStorage = MemoryStorage()
     config: Config = load_config()
-    bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
-    dp: Dispatcher = Dispatcher(bot)
+    bot: Bot = Bot(token=config.tg_bot.token, parse_mode = 'HTML')
+    dp: Dispatcher = Dispatcher(bot, storage = storage)
+    # scheduler: AsyncIOScheduler = AsyncIOScheduler()
+    # scheduler.start()
     await set_main_menu(dp)
     register_all_handlers(dp)
     try:
