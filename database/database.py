@@ -13,19 +13,46 @@ class Game:
     is_in_game: bool = False
     language: str = RUS
     level: str = NORMAL
-    time: int = 90
+    time: int = 15
     score_to_win: int = 100 # не больше 500
     pass_tax : bool = False
-    last_word_time: bool = False # if prolonged is possible
-    current_team: int = 0
-    current_word: int = 0
-    # winner: Dict = field(default_factory=dict)
+    last_word_is_played: bool = False # if prolonged is possible
+    time_is_over: bool = False
+    current_team: int = 0 # номер текущей команды (чтобы отследить победителя)
+    current_word: int = 0 # номер текущего слова, который будет отражаться в сообщении
+    previous_word: str = ''
+    text: str = ''
     teams: Dict = field(default_factory=dict)
-    used_words: Set = field(default_factory=set)# incapsulation ?
+    game_words: List = field(default_factory=list)
+    passed_words: List = field(default_factory=list)# incapsulation ?
     
+    def set_previous_word(self, word: str):
+        self.previous_word = word
+
+    def get_previous_word(self) -> str:
+        return self.previous_word
+
+    def set_game_words(self, language: str, level: str):
+        self.game_words = words[language][level]
+
+    def get_game_words(self) -> List:
+        return self.game_words
+
+    def remove_game_words(self, word: str):
+        self.game_words.remove(word)
+
+    def reset_game_words(self):
+        self.game_words = words[self.language][self.level]
+
+    def set_text(self, text: str):
+        self.text = text
+
+    def get_text(self) -> int:
+        return self.text
 
     def set_game_status(self, is_in_game: bool):
         self.is_in_game = is_in_game
+
 
     def get_game_status(self) -> bool:
         return self.is_in_game
@@ -44,6 +71,12 @@ class Game:
         
     def set_time(self, time: int):
         self.time = time
+
+    def get_time(self):
+        return self.time
+
+    def set_time_is_over(self, is_over: bool):
+        self.time_is_over = bool
     
     def set_max_points(self, points: int):
         self.score_to_win = points
@@ -51,11 +84,14 @@ class Game:
     def set_pass_tax(self, tax: bool):
         self.pass_tax = bool
     
-    def set_last_word_time(self, prolonged: bool):
-        self.last_word_time = prolonged
+    def set_last_word_is_played(self, is_played: bool):
+        self.last_word_is_played = is_played
+
+    def get_last_word_is_played(self):
+        return self.last_word_is_played
 
     def move_current_team(self):
-        self.current_team = (self.current_team + 1) % len(self.teams)
+        self.current_team = self.current_team % len(self.teams) + 1
     
     def get_current_team(self) -> int:
         return self.current_team
@@ -65,12 +101,18 @@ class Game:
     
     def get_current_word(self) -> int:
         return self.current_word
-    
-    def add_used_word(self, number: int):
-        self.used_words.add(number)
 
-    def get_used_words(self) -> Set:
-        return self.used_words
+    def reset_current_word(self):
+        self.current_word = 1
+    
+    def add_passed_word(self, word: str):
+        self.passed_words.append(word)
+
+    def get_passed_words(self) -> List:
+        return self.passed_words
+
+    def reset_passed_words(self):
+        self.passed_words = list()
     # def get_winner(self) -> Dict:
     #     return self.winner
 
@@ -102,23 +144,23 @@ class Game:
 
 
 
-def load_dict(path: str) -> Dict:
+def load_list(path: str) -> Dict:
     with open(path, 'r') as f:
         lines = f.readlines()
-    new_dict = {i: line.strip('\n') for i, line in enumerate(lines, start = 1)}
-    return new_dict
+    new_list = [line.strip('\n') for line in lines]
+    return new_list
 
 
 def load_words() -> Dict:
     words = dict.fromkeys([RUS, ENG])
     words[RUS] = dict.fromkeys([EASY, NORMAL, HARD])
     words[ENG] = dict.fromkeys([EASY, NORMAL, HARD])
-    words[RUS][EASY] = load_dict('database/rus_easy.txt')
-    words[RUS][NORMAL] = load_dict('database/rus_normal.txt')
-    words[RUS][HARD] = load_dict('database/rus_hard.txt')
-    words[ENG][EASY] = load_dict('database/eng_easy.txt')
-    words[ENG][NORMAL] = load_dict('database/eng_normal.txt')
-    words[ENG][HARD] = load_dict('database/eng_hard.txt')
+    words[RUS][EASY] = load_list('database/rus_easy.txt')
+    words[RUS][NORMAL] = load_list('database/rus_normal.txt')
+    words[RUS][HARD] = load_list('database/rus_hard.txt')
+    words[ENG][EASY] = load_list('database/eng_easy.txt')
+    words[ENG][NORMAL] = load_list('database/eng_normal.txt')
+    words[ENG][HARD] = load_list('database/eng_hard.txt')
     return(words)
 
 words: Dict = load_words()
