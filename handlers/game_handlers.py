@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 from database.database import users_db
 from lexicon.lexicon import LEXICON
 from keyboards.keyboards import get_new_game_kb, get_ready_kb, get_guess_pass_kb
-from services.alias_game import generate_new_word
+from services.alias_game import generate_new_word, control_len_text
 
 
 async def process_ready_press(callback: CallbackQuery):
@@ -25,7 +25,11 @@ async def process_guess_press(callback: CallbackQuery):
     user_id = callback.from_user.id
     word = generate_new_word(user_id)
     curr_word: int = users_db[user_id].get_current_word()
-    text = callback.message.text + f' ✅\n<b>{curr_word}. {word}</b>' 
+    if curr_word <= 100:
+        text = callback.message.text
+    else:
+        text = control_len_text(callback.message.text)
+    text += f' ✅\n<b>{curr_word}. {word}</b>' 
     users_db[user_id].move_current_word()
     users_db[user_id].set_previous_word(word)
     users_db[user_id].calculate_score(users_db[user_id].get_current_team(),
@@ -39,7 +43,11 @@ async def process_pass_press(callback: CallbackQuery):
     user_id = callback.from_user.id
     word = generate_new_word(user_id)
     curr_word: int = users_db[user_id].get_current_word()
-    text = callback.message.text + f' ❌\n<b>{curr_word}. {word}</b>' 
+    if curr_word <= 100:
+        text = callback.message.text
+    else:
+        text = control_len_text(callback.message.text)
+    text += f' ❌\n<b>{curr_word}. {word}</b>' 
     users_db[user_id].move_current_word()
     users_db[user_id].add_passed_word(users_db[user_id].get_previous_word())
     users_db[user_id].set_previous_word(word)
