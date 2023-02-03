@@ -17,5 +17,12 @@ def generate_new_word(user_id) -> str:
     users_db[user_id].remove_game_words(word)
     return word
 
+
+def control_len_text(text: str) -> str:
+    lines = text.split('\n')
+    lines.pop(4)
+    text = ('\n').join(lines)
+    return text
+
 def get_winner():
     pass
