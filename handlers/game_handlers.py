@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 from database.database import users_db
 from lexicon.lexicon import LEXICON
 from keyboards.keyboards import get_new_game_kb, get_ready_kb, get_guess_pass_kb
-from services.alias_game import generate_new_word, control_len_text
+from services.alias_game import generate_new_word, control_len_text, get_winner
 
 
 async def process_ready_press(callback: CallbackQuery):
@@ -58,6 +58,30 @@ async def process_pass_press(callback: CallbackQuery):
     users_db[user_id].set_text(text)
 
 
+async def round_start(message: Message, user_id: int):
+    # winners = get_winner()
+    # if winners == 1:
+    #     await    
+    users_db[user_id].move_current_team()
+    users_db[user_id].reset_current_word()
+    users_db[user_id].set_time_is_over(False)
+    team_number = users_db[user_id].get_current_team()
+    win = get_winner(user_id)
+    if team_number == 1 and len(win) == 1:
+        users_db[user_id].set_game_over()
+        key = list(win.keys())[0]
+        text = f"""🎉Поздравляем!
+Победила команда №{key} «{win[key]['name']}» со счётом {win[key]['score']}
+
+Начать новую игру?"""
+        await message.answer(text = text, reply_markup = get_new_game_kb())
+    else:
+        team_name = users_db[user_id].get_teams()[team_number]['name']
+        text = f'Очередь команды «{team_name}»\n\nГотовы?'
+        await message.answer(text = text, reply_markup = get_ready_kb())
+
+
+
 async def scheduler (callback: CallbackQuery, id: int):
     await sleep(users_db[id].get_time())
     text = users_db[id].get_text()
@@ -68,17 +92,6 @@ async def scheduler (callback: CallbackQuery, id: int):
         await round_start(callback.message, id)
     else:
         pass
-
-
-async def round_start(message: Message, user_id: int):    
-    users_db[user_id].move_current_team()
-    users_db[user_id].reset_current_word()
-    users_db[user_id].set_time_is_over(False)
-    team_number = users_db[user_id].get_current_team()
-    team_name = users_db[user_id].get_teams()[team_number]['name']
-    text = f'Очередь команды «{team_name}»\n\nГотовы?'
-    
-    await message.answer(text = text, reply_markup = get_ready_kb())
 
 
 def register_game_handlers(dp: Dispatcher):
