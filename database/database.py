@@ -13,8 +13,8 @@ class Game:
     is_in_game: bool = False
     language: str = RUS
     level: str = NORMAL
-    time: int = 15
-    score_to_win: int = 100 # не больше 500
+    time: int = 10
+    score_to_win: int = 15 # не больше 250
     pass_tax : bool = False
     last_word_is_played: bool = False # if prolonged is possible
     time_is_over: bool = False
@@ -26,6 +26,16 @@ class Game:
     game_words: List = field(default_factory=list)
     passed_words: List = field(default_factory=list)# incapsulation ?
     
+    def set_game_over (self):
+        self.is_in_game = False
+        self.time_is_over = False
+        self.current_team: int = 0 
+        previous_word: str = ''
+        text: str = ''
+        teams = dict()
+        game_words = list()
+        passed_words = list()
+
     def set_previous_word(self, word: str):
         self.previous_word = word
 
@@ -78,8 +88,11 @@ class Game:
     def set_time_is_over(self, is_over: bool):
         self.time_is_over = bool
     
-    def set_max_points(self, points: int):
+    def set_score_to_win(self, points: int):
         self.score_to_win = points
+
+    def get_score_to_win(self) -> int:
+        return self.score_to_win
     
     def set_pass_tax(self, tax: bool):
         self.pass_tax = bool
