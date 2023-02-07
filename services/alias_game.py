@@ -1,5 +1,5 @@
 from random import choice, seed
-from typing import Set
+from typing import Set, Dict
 from database.database import users_db
 
 def generate_new_word(user_id) -> str:
@@ -24,5 +24,21 @@ def control_len_text(text: str) -> str:
     text = ('\n').join(lines)
     return text
 
-def get_winner():
-    pass
+def find_max_score(teams: Dict, score_to_win):
+    score_list = list()
+    for key in teams:
+        if (teams[key]['score'] >= score_to_win):
+            score_list.append(teams[key]['score'])
+    if len(score_list) == 0:
+        return 0
+    return max(score_list)  
+
+def get_winner(user_id: int):
+    teams = users_db[user_id].get_teams()
+    winners = dict()
+    max_score = find_max_score(teams, users_db[user_id].get_score_to_win())
+    if max_score > 0:
+        for key in teams:
+            if (teams[key]['score'] == max_score):
+                winners[key]= teams[key]
+    return winners
