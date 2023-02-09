@@ -26,6 +26,8 @@ async def process_guess_press(callback: CallbackQuery):
     user_id = callback.from_user.id
     word = generate_new_word(user_id)
     curr_word: int = users_db[user_id].get_current_word()
+    users_db[user_id].calculate_score(users_db[user_id].get_current_team(),
+                                    guess = 1)
     if users_db[user_id].get_time_is_over() == True:
         await callback.message.edit_text(callback.message.text +
         ' ✅\n\n⌛️ <b>Время вышло!</b>')
@@ -37,8 +39,6 @@ async def process_guess_press(callback: CallbackQuery):
     text += f' ✅\n<b>{curr_word}. {word}</b>'
     users_db[user_id].move_current_word()
     users_db[user_id].set_previous_word(word)
-    users_db[user_id].calculate_score(users_db[user_id].get_current_team(),
-                                    guess = 1)
     await callback.message.edit_text(text=text,
                                 reply_markup=callback.message.reply_markup)
     users_db[user_id].set_text(text)
@@ -48,6 +48,8 @@ async def process_pass_press(callback: CallbackQuery):
     user_id = callback.from_user.id
     word = generate_new_word(user_id)
     curr_word: int = users_db[user_id].get_current_word()
+    users_db[user_id].calculate_score(users_db[user_id].get_current_team(),
+                                    pas = 1)
     if users_db[user_id].get_time_is_over() == True:
         await callback.message.edit_text(callback.message.text +
         ' ❌\n\n⌛️ <b>Время вышло!</b>')
@@ -60,8 +62,6 @@ async def process_pass_press(callback: CallbackQuery):
     users_db[user_id].move_current_word()
     users_db[user_id].add_passed_word(users_db[user_id].get_previous_word())
     users_db[user_id].set_previous_word(word)
-    users_db[user_id].calculate_score(users_db[user_id].get_current_team(),
-                                    pas = 1)
     await callback.message.edit_text(text=text,
                                 reply_markup=callback.message.reply_markup)
     users_db[user_id].set_text(text)
