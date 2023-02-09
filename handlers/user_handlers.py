@@ -65,6 +65,20 @@ async def set_level(message: Message):
     level: str = message.text.lower()
     users_db[user_id].set_level(level)
 
+
+async def process_set_pass_tax_command(message: Message):
+    await message.answer(LEXICON[message.text],
+                        reply_markup = get_pass_tax_kb())
+
+
+async def set_pass_tax(message: Message):
+    user_id: int = message.from_user.id
+    if message.text == 'Отнимать':
+        users_db[user_id].set_pass_tax(True)
+    else:
+        users_db[user_id].set_pass_tax(False)
+
+
 async def game_start(message: Message, state: FSMContext): # проверить на сброс параметров
     await state.finish()
     user_id: int = message.from_user.id
@@ -99,14 +113,16 @@ def register_user_handlers(dp: Dispatcher):
     #                             commands=['set_score_to_win'])
     # dp.register_message_handler(process_set_time_command,
     #                             commands=['set_time'])
-    # dp.register_message_handler(process_set_pass_tax_command,
-    #                             commands=['set_pass_tax'])
+    dp.register_message_handler(process_set_pass_tax_command,
+                                commands=['set_pass_tax'])
     # dp.register_message_handler(process_set_reset_command,
     #                             commands=['set_reset'])
     dp.register_message_handler(set_language,
                                 Text(equals=['RUS', 'ENG', 'TAU']))
     dp.register_message_handler(set_level,
                                 Text(equals=['EASY', 'NORMAL', 'HARD']))
+    dp.register_message_handler(set_pass_tax,
+                                Text(equals=['Не отнимать', 'Отнимать']))
 
     dp.register_callback_query_handler(process_game_press,
                                     text='new_game_button_pressed')
