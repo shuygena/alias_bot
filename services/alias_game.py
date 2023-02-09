@@ -42,3 +42,13 @@ def get_winner(user_id: int):
             if (teams[key]['score'] == max_score):
                 winners[key]= teams[key]
     return winners
+
+# def generate_team_name():
+#     names = """Шарлотка Бронте
+# Пельмени Перельмана
+
+# """
+#     names_list = names.split('\n')
+#     seed()
+#     teams = list()
+#     teams.append(choice())

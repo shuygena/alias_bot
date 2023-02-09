@@ -7,6 +7,7 @@ ENG = 'eng'
 EASY = 'easy'
 NORMAL = 'normal'
 HARD = 'hard'
+TAU = 'tau'
 
 @dataclass
 class Game:
@@ -86,7 +87,10 @@ class Game:
         return self.time
 
     def set_time_is_over(self, is_over: bool):
-        self.time_is_over = bool
+        self.time_is_over = is_over
+
+    def get_time_is_over(self):
+        return self.time_is_over
     
     def set_score_to_win(self, points: int):
         self.score_to_win = points
@@ -104,7 +108,10 @@ class Game:
         return self.last_word_is_played
 
     def move_current_team(self):
-        self.current_team = self.current_team % len(self.teams) + 1
+        if (len(self.teams) == 1):
+            self.current_team = 1
+        else:
+            self.current_team = self.current_team % len(self.teams) + 1
     
     def get_current_team(self) -> int:
         return self.current_team
@@ -165,15 +172,19 @@ def load_list(path: str) -> Dict:
 
 
 def load_words() -> Dict:
-    words = dict.fromkeys([RUS, ENG])
+    words = dict.fromkeys([RUS, ENG, TAU])
     words[RUS] = dict.fromkeys([EASY, NORMAL, HARD])
     words[ENG] = dict.fromkeys([EASY, NORMAL, HARD])
+    words[TAU] = dict.fromkeys([EASY, NORMAL, HARD])
     words[RUS][EASY] = load_list('database/rus_easy.txt')
     words[RUS][NORMAL] = load_list('database/rus_normal.txt')
     words[RUS][HARD] = load_list('database/rus_hard.txt')
     words[ENG][EASY] = load_list('database/eng_easy.txt')
     words[ENG][NORMAL] = load_list('database/eng_normal.txt')
     words[ENG][HARD] = load_list('database/eng_hard.txt')
+    words[TAU][EASY] = load_list('database/tau_easy.txt')
+    words[TAU][NORMAL] = load_list('database/tau_normal.txt')
+    words[TAU][HARD] = load_list('database/tau_hard.txt')
     return(words)
 
 words: Dict = load_words()
