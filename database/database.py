@@ -99,7 +99,7 @@ class Game:
         return self.score_to_win
     
     def set_pass_tax(self, tax: bool):
-        self.pass_tax = bool
+        self.pass_tax = tax
     
     def set_last_word_is_played(self, is_played: bool):
         self.last_word_is_played = is_played

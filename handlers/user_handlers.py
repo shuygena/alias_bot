@@ -12,8 +12,8 @@ from keyboards.game_settings import get_language_kb, get_level_kb, get_pass_tax_
 class FSMFillForm(StatesGroup):
     fill_teams_names = State()
     set_language = State()
-    # set_level = State()
-    # set_pass_tax = State()
+    set_level = State()
+    set_pass_tax = State()
 
 
 async def process_start_command(message: Message):
@@ -57,7 +57,8 @@ async def set_language(callback: CallbackQuery, state: FSMContext):
     language: str = callback.data
     users_db[user_id].set_language(language)
     await callback.answer()
-    await callback.message.edit_text(text = callback.message.text)
+    await callback.message.edit_text(text = callback.message.text  +
+                                    '\n\n⚙️ <b>Настройки изменены!</b>')
 
 
 async def warning_not_language(message: Message):
@@ -68,24 +69,44 @@ async def warning_not_language(message: Message):
 async def process_set_level_command(message: Message):
     await message.answer(LEXICON[message.text],
                         reply_markup = get_level_kb())
+    await FSMFillForm.set_level.set() 
 
-async def set_level(message: Message):
-    user_id: int = message.from_user.id
-    level: str = message.text.lower()
+async def set_level(callback: CallbackQuery, state: FSMContext):
+    await state.finish()
+    user_id: int = callback.from_user.id
+    level: str = callback.data
     users_db[user_id].set_level(level)
+    await callback.answer()
+    await callback.message.edit_text(text = callback.message.text +
+                                    '\n\n⚙️ <b>Настройки изменены!</b>')
+
+
+async def warning_not_level(message: Message):
+    await message.answer(text='Пожалуйста, пользуйcя кнопками '
+                              'при выборе уровня сложности')
 
 
 async def process_set_pass_tax_command(message: Message):
     await message.answer(LEXICON[message.text],
                         reply_markup = get_pass_tax_kb())
+    await FSMFillForm.set_pass_tax.set() 
 
 
-async def set_pass_tax(message: Message):
-    user_id: int = message.from_user.id
-    if message.text == 'Отнимать':
+async def set_pass_tax(callback: CallbackQuery, state: FSMContext):
+    await state.finish()
+    user_id: int = callback.from_user.id
+    pass_tax: str = callback.data
+    if pass_tax == 'True':
         users_db[user_id].set_pass_tax(True)
     else:
         users_db[user_id].set_pass_tax(False)
+    await callback.answer()
+    await callback.message.edit_text(text = callback.message.text +
+                                    '\n\n⚙️ <b>Настройки изменены!</b>')
+
+
+async def warning_not_tax(message: Message):
+    await message.answer(text='Пожалуйста, пользуйcя кнопками')
 
 
 async def game_start(message: Message, state: FSMContext): # проверить на сброс параметров
@@ -118,13 +139,13 @@ def register_user_handlers(dp: Dispatcher):
                                 commands=['set_language'])
     dp.register_message_handler(process_set_level_command,
                                 commands=['set_level'])
+    dp.register_message_handler(process_set_pass_tax_command,
+                                commands=['set_pass_tax'])
     
     # dp.register_message_handler(process_set_score_to_win_command,
     #                             commands=['set_score_to_win'])
     # dp.register_message_handler(process_set_time_command,
     #                             commands=['set_time'])
-    dp.register_message_handler(process_set_pass_tax_command,
-                                commands=['set_pass_tax'])
     # dp.register_message_handler(process_set_reset_command,
     #                             commands=['set_reset'])
     # dp.register_message_handler(set_language,
@@ -132,10 +153,12 @@ def register_user_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(set_language,
                                    text=['rus', 'eng', 'tau'],
                                    state=FSMFillForm.set_language)
-    dp.register_message_handler(set_level,
-                                Text(equals=['EASY', 'NORMAL', 'HARD']))
-    dp.register_message_handler(set_pass_tax,
-                                Text(equals=['Не отнимать', 'Отнимать']))
+    dp.register_callback_query_handler(set_level,
+                                text=['easy', 'normal', 'hard'],
+                                state=FSMFillForm.set_level)
+    dp.register_callback_query_handler(set_pass_tax,
+                                text=['True', 'False'],
+                                state=FSMFillForm.set_pass_tax)
 
     dp.register_callback_query_handler(process_game_press,
                                     text='new_game_button_pressed')
@@ -150,3 +173,9 @@ def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(warning_not_language,
                             content_types='any',
                             state=FSMFillForm.set_language)
+    dp.register_message_handler(warning_not_level,
+                            content_types='any',
+                            state=FSMFillForm.set_level)
+    dp.register_message_handler(warning_not_tax,
+                            content_types='any',
+                            state=FSMFillForm.set_pass_tax)

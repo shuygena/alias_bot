@@ -79,7 +79,7 @@ async def round_start(message: Message, user_id: int):
     if team_number == 1 and len(win) == 1:
         users_db[user_id].set_game_over()
         key = list(win.keys())[0]
-        text = f"""🎉Поздравляем!
+        text = f"""🎉 Поздравляем!
 
 Победила команда №{key} <b>{win[key]['name']}</b> со счётом {win[key]['score']}
 
