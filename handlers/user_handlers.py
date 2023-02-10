@@ -11,7 +11,7 @@ from keyboards.game_settings import get_language_kb, get_level_kb, get_pass_tax_
 
 class FSMFillForm(StatesGroup):
     fill_teams_names = State()
-    # set_language = State()
+    set_language = State()
     # set_level = State()
     # set_pass_tax = State()
 
@@ -48,12 +48,21 @@ async def process_game_press(callback: CallbackQuery):
 async def process_set_language_command(message: Message):
     await message.answer(LEXICON[message.text],
                         reply_markup = get_language_kb())
+    await FSMFillForm.set_language.set()                   
     
 
-async def set_language(message: Message):
-    user_id: int = message.from_user.id
-    language: str = message.text.lower()
+async def set_language(callback: CallbackQuery, state: FSMContext):
+    await state.finish()
+    user_id: int = callback.from_user.id
+    language: str = callback.data
     users_db[user_id].set_language(language)
+    await callback.answer()
+    await callback.message.edit_text(text = callback.message.text)
+
+
+async def warning_not_language(message: Message):
+    await message.answer(text='Пожалуйста, пользуйcя кнопками '
+                              'при выборе языка')
 
 
 async def process_set_level_command(message: Message):
@@ -109,6 +118,7 @@ def register_user_handlers(dp: Dispatcher):
                                 commands=['set_language'])
     dp.register_message_handler(process_set_level_command,
                                 commands=['set_level'])
+    
     # dp.register_message_handler(process_set_score_to_win_command,
     #                             commands=['set_score_to_win'])
     # dp.register_message_handler(process_set_time_command,
@@ -117,8 +127,11 @@ def register_user_handlers(dp: Dispatcher):
                                 commands=['set_pass_tax'])
     # dp.register_message_handler(process_set_reset_command,
     #                             commands=['set_reset'])
-    dp.register_message_handler(set_language,
-                                Text(equals=['RUS', 'ENG', 'TAU']))
+    # dp.register_message_handler(set_language,
+    #                             Text(equals=['RUS', 'ENG', 'TAU']))
+    dp.register_callback_query_handler(set_language,
+                                   text=['rus', 'eng', 'tau'],
+                                   state=FSMFillForm.set_language)
     dp.register_message_handler(set_level,
                                 Text(equals=['EASY', 'NORMAL', 'HARD']))
     dp.register_message_handler(set_pass_tax,
@@ -134,3 +147,6 @@ def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(warning_not_names,
                             content_types='any',
                             state=FSMFillForm.fill_teams_names)
+    dp.register_message_handler(warning_not_language,
+                            content_types='any',
+                            state=FSMFillForm.set_language)

@@ -1,12 +1,24 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton # InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 
-def get_language_kb() -> ReplyKeyboardMarkup:
-    language_kb: ReplyKeyboardMarkup = ReplyKeyboardMarkup(one_time_keyboard=True,
+# def get_language_kb() -> ReplyKeyboardMarkup:
+#     language_kb: ReplyKeyboardMarkup = ReplyKeyboardMarkup(one_time_keyboard=True,
+#                                                         resize_keyboard=True)
+#     rus: KeyboardButton = KeyboardButton('RUS')
+#     eng: KeyboardButton = KeyboardButton('ENG')
+#     tau: KeyboardButton = KeyboardButton('TAU')
+#     language_kb.add(rus, eng).add(tau)
+#     return language_kb
+
+def get_language_kb() -> InlineKeyboardMarkup:
+    language_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(one_time_keyboard=True,
                                                         resize_keyboard=True)
-    rus: KeyboardButton = KeyboardButton('RUS')
-    eng: KeyboardButton = KeyboardButton('ENG')
-    tau: KeyboardButton = KeyboardButton('TAU')
-    language_kb.add(rus, eng).add(tau)
+    rus: InlineKeyboardButton = InlineKeyboardButton(text='Русский',
+                                                    callback_data='rus')
+    eng: InlineKeyboardButton = InlineKeyboardButton(text='Английский',
+                                                    callback_data='eng')
+    tau: InlineKeyboardButton = InlineKeyboardButton(text='Карачаево-Балкарский',
+                                                    callback_data='tau')
+    language_kb.add(rus).add(eng).add(tau)
     return language_kb
 
 def get_level_kb() -> ReplyKeyboardMarkup:
