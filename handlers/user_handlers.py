@@ -145,6 +145,22 @@ async def set_time(message: Message, state: FSMContext):
 async def warning_not_time(message: Message):
     await message.answer(text='Введи число от 10 до 300 ❗️')
 
+async def process_set_score_to_win_command(message: Message):
+    await message.answer(LEXICON[message.text])
+    await FSMFillForm.set_score_to_win.set() 
+
+
+async def set_score_to_win(message: Message, state: FSMContext):
+    await state.finish()
+    user_id: int = message.from_user.id
+    score_to_win: str = int(message.text)
+    users_db[user_id].set_score_to_win(score_to_win)
+    await message.answer('⚙️ <b>Настройки сохранены!</b>')
+
+
+async def warning_not_score_to_win(message: Message):
+    await message.answer(text='Введи число от 1 до 200 ❗️')
+
 
 def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(process_start_command, commands=['start'])
@@ -158,8 +174,8 @@ def register_user_handlers(dp: Dispatcher):
                                 commands=['set_level'])
     dp.register_message_handler(process_set_pass_tax_command,
                                 commands=['set_pass_tax'])
-    # dp.register_message_handler(process_set_score_to_win_command,
-    #                             commands=['set_score_to_win'])
+    dp.register_message_handler(process_set_score_to_win_command,
+                                commands=['set_score_to_win'])
     dp.register_message_handler(process_set_time_command,
                                 commands=['set_time'])
     # dp.register_message_handler(process_set_reset_command,
@@ -183,6 +199,9 @@ def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(set_time,
                 lambda x: x.text.isdigit() and 10 <= int(x.text) <= 300,
                                 state=FSMFillForm.set_time)
+    dp.register_message_handler(set_score_to_win,
+                lambda x: x.text.isdigit() and 1 <= int(x.text) <= 200,
+                                state=FSMFillForm.set_score_to_win)
 
     dp.register_message_handler(warning_not_names,
                             content_types='any',
@@ -199,3 +218,6 @@ def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(warning_not_time,
                             content_types='any',
                             state=FSMFillForm.set_time)
+    dp.register_message_handler(warning_not_score_to_win,
+                            content_types='any',
+                            state=FSMFillForm.set_score_to_win)
