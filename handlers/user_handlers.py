@@ -162,6 +162,13 @@ async def warning_not_score_to_win(message: Message):
     await message.answer(text='Введи число от 1 до 200 ❗️')
 
 
+async def process_set_reset_command(message: Message):
+    await message.answer('⚙️ <b>Настройки сброшены!</b>')
+    user_id: int = message.from_user.id
+    users_db[user_id].reset_all()
+    
+
+
 def register_user_handlers(dp: Dispatcher):
     dp.register_message_handler(process_start_command, commands=['start'])
     dp.register_message_handler(process_game_command, commands=['game'])
@@ -178,8 +185,8 @@ def register_user_handlers(dp: Dispatcher):
                                 commands=['set_score_to_win'])
     dp.register_message_handler(process_set_time_command,
                                 commands=['set_time'])
-    # dp.register_message_handler(process_set_reset_command,
-    #                             commands=['reset'])
+    dp.register_message_handler(process_set_reset_command,
+                                commands=['reset'])
 
     dp.register_callback_query_handler(set_language,
                                    text=['rus', 'eng', 'tau'],

@@ -68,9 +68,6 @@ async def process_pass_press(callback: CallbackQuery):
 
 
 async def round_start(message: Message, user_id: int):
-    # winners = get_winner()
-    # if winners == 1:
-    #     await    
     users_db[user_id].move_current_team()
     users_db[user_id].reset_current_word()
     users_db[user_id].set_time_is_over(False)
@@ -99,11 +96,7 @@ async def scheduler (callback: CallbackQuery, id: int):
     text = text.replace('<b>', '').replace('</b>','')
     text  += ' 🏁\n\n⌛️ <b>Время вышло!</b>'
     await callback.message.edit_text(text = text)
-    if users_db[id].get_last_word_is_played() == False:
-        # await sleep(1) # надеюсь, что не нужно, чтобы корректно отредактировать сообщение
-        await round_start(callback.message, id)
-    else:
-        pass
+    await round_start(callback.message, id)
 
 
 def register_game_handlers(dp: Dispatcher):

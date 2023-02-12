@@ -17,7 +17,6 @@ class Game:
     time: int = 10
     score_to_win: int = 15 # не больше 250
     pass_tax : bool = False
-    last_word_is_played: bool = False # if prolonged is possible
     time_is_over: bool = False
     current_team: int = 0 # номер текущей команды (чтобы отследить победителя)
     current_word: int = 0 # номер текущего слова, который будет отражаться в сообщении
@@ -27,6 +26,13 @@ class Game:
     game_words: List = field(default_factory=list)
     passed_words: List = field(default_factory=list)# incapsulation ?
     
+    def reset_all(self):
+        self.language = RUS
+        self.level = NORMAL
+        self.score_to_win = 100
+        self.time = 60
+        self.pass_tax = False
+
     def set_game_over (self):
         self.is_in_game = False
         self.time_is_over = False
@@ -100,12 +106,6 @@ class Game:
     
     def set_pass_tax(self, tax: bool):
         self.pass_tax = tax
-    
-    def set_last_word_is_played(self, is_played: bool):
-        self.last_word_is_played = is_played
-
-    def get_last_word_is_played(self):
-        return self.last_word_is_played
 
     def move_current_team(self):
         if (len(self.teams) == 1):
