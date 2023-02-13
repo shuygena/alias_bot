@@ -10,7 +10,7 @@ from database.database import words, users_db, RUS, ENG, EASY, NORMAL, HARD
 from keyboards.main_menu import set_main_menu
 from handlers.user_handlers import register_user_handlers
 from handlers.game_handlers import register_game_handlers
-# from handlers.other_handlers import register_other_handlers
+from handlers.other_handlers import register_spam_handler
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def register_all_handlers(dp: Dispatcher) -> None:
     register_user_handlers(dp)
     register_game_handlers(dp)
-    # register_other_handlers(dp)
+    register_spam_handler(dp)
 
 async def main():
     logging.basicConfig(
