@@ -16,3 +16,8 @@ def load_config(path = None) -> Config:
     env = Env()
     env.read_env(path)
     return Config(tg_bot = TgBot(token = env('BOT_TOKEN')))
+
+def get_api_key(path = None) -> str:
+    env = Env()
+    env.read_env(path)
+    return env('API_KEY')
