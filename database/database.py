@@ -14,17 +14,17 @@ class Game:
     is_in_game: bool = False
     language: str = RUS
     level: str = NORMAL
-    time: int = 10
-    score_to_win: int = 15 # не больше 250
+    time: int = 60
+    score_to_win: int = 100 
     pass_tax : bool = False
     time_is_over: bool = False
-    current_team: int = 0 # номер текущей команды (чтобы отследить победителя)
-    current_word: int = 0 # номер текущего слова, который будет отражаться в сообщении
+    current_team: int = 0 
+    current_word: int = 0
     previous_word: str = ''
     text: str = ''
     teams: Dict = field(default_factory=dict)
     game_words: List = field(default_factory=list)
-    passed_words: List = field(default_factory=list)# incapsulation ?
+    passed_words: List = field(default_factory=list)
     
     def reset_all(self):
         self.language = RUS
