@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-RUS = 'rus'
-ENG = 'eng'
-EASY = 'easy'
-NORMAL = 'normal'
-HARD = 'hard'
-TAU = 'tau'
+RUS: str = 'rus'
+ENG: str = 'eng'
+EASY: str = 'easy'
+NORMAL: str = 'normal'
+HARD: str = 'hard'
+TAU: str = 'tau'
 
 
 @dataclass
@@ -50,7 +50,8 @@ class Game:
         return self.previous_word
 
     def set_game_words(self, language: str, level: str):
-        self.game_words = words[language][level]
+        path = 'database/' + language + '_' + level + '.txt'
+        self.game_words = load_list(path)
 
     def get_game_words(self) -> List:
         return self.game_words
@@ -59,7 +60,10 @@ class Game:
         self.game_words.remove(word)
 
     def reset_game_words(self):
-        self.game_words = words[self.language][self.level]
+        language: str = self.language
+        level: str = self.level
+        path = 'database/' + language + '_' + level + '.txt'
+        self.game_words = load_list(path)
 
     def set_text(self, text: str):
         self.text = text
@@ -161,22 +165,4 @@ def load_list(path: str) -> Dict:
     return new_list
 
 
-def load_words() -> Dict:
-    words = dict.fromkeys([RUS, ENG, TAU])
-    words[RUS] = dict.fromkeys([EASY, NORMAL, HARD])
-    words[ENG] = dict.fromkeys([EASY, NORMAL, HARD])
-    words[TAU] = dict.fromkeys([EASY, NORMAL, HARD])
-    words[RUS][EASY] = load_list('database/rus_easy.txt')
-    words[RUS][NORMAL] = load_list('database/rus_normal.txt')
-    words[RUS][HARD] = load_list('database/rus_hard.txt')
-    words[ENG][EASY] = load_list('database/eng_easy.txt')
-    words[ENG][NORMAL] = load_list('database/eng_normal.txt')
-    words[ENG][HARD] = load_list('database/eng_hard.txt')
-    words[TAU][EASY] = load_list('database/tau_easy.txt')
-    words[TAU][NORMAL] = load_list('database/tau_normal.txt')
-    words[TAU][HARD] = load_list('database/tau_hard.txt')
-    return words
-
-
-words: Dict = load_words()
 users_db: Dict = {}
