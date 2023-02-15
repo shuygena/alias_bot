@@ -3,10 +3,9 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from typing import Dict
 
-from config_data.config import Config, load_config # i need it?
-from database.database import words, users_db, RUS, ENG, EASY, NORMAL, HARD
+from config_data.config import Config, load_config  # i need it?
+# from database.database import words, users_db, RUS, ENG, EASY, NORMAL, HARD
 from keyboards.main_menu import set_main_menu
 from handlers.user_handlers import register_user_handlers
 from handlers.game_handlers import register_game_handlers
@@ -20,16 +19,17 @@ def register_all_handlers(dp: Dispatcher) -> None:
     register_game_handlers(dp)
     register_spam_handler(dp)
 
+
 async def main():
     logging.basicConfig(
-        level = logging.INFO,
-        format = u'%(filename)s:%(lineno)d #%(levelname)-8s '
+        level=logging.INFO,
+        format=u'%(filename)s:%(lineno)d #%(levelname)-8s '
                u'[%(asctime)s] - %(name)s - %(message)s')
     logger.info('Starting bot')
     storage: MemoryStorage = MemoryStorage()
     config: Config = load_config()
-    bot: Bot = Bot(token=config.tg_bot.token, parse_mode = 'HTML')
-    dp: Dispatcher = Dispatcher(bot, storage = storage)
+    bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
+    dp: Dispatcher = Dispatcher(bot, storage=storage)
     await set_main_menu(dp)
     register_all_handlers(dp)
     try:

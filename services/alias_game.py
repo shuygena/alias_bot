@@ -2,10 +2,11 @@ from random import choice, seed
 from typing import Set, Dict
 from database.database import users_db
 
+
 def generate_new_word(user_id) -> str:
     seed()
     game_words: Set = users_db[user_id].get_game_words()
-    if len(game_words) == 0: # что если и len(passed_words) == 
+    if len(game_words) == 0:
         passed_words = users_db[user_id].get_passed_words()
         if len(passed_words) > 0:
             users_db[user_id].set_game_words(passed_words)
@@ -24,6 +25,7 @@ def control_len_text(text: str) -> str:
     text = ('\n').join(lines)
     return text
 
+
 def find_max_score(teams: Dict, score_to_win):
     score_list = list()
     for key in teams:
@@ -33,6 +35,7 @@ def find_max_score(teams: Dict, score_to_win):
         return 0
     return max(score_list)  
 
+
 def get_winner(user_id: int):
     teams = users_db[user_id].get_teams()
     winners = dict()
@@ -40,15 +43,5 @@ def get_winner(user_id: int):
     if max_score > 0:
         for key in teams:
             if (teams[key]['score'] == max_score):
-                winners[key]= teams[key]
+                winners[key] = teams[key]
     return winners
-
-# def generate_team_name():
-#     names = """Шарлотка Бронте
-# Пельмени Перельмана
-
-# """
-#     names_list = names.split('\n')
-#     seed()
-#     teams = list()
-#     teams.append(choice())

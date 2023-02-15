@@ -6,7 +6,8 @@ from aiogram.types import Message
 
 from config_data.config import get_api_key
 
-API_URL: str = 'https://api.api-ninjas.com/v1/loremipsum?paragraphs=1;random=true;max_length=50'
+API_URL: str = 'https://api.api-ninjas.com/v1/loremipsum?paragraphs=1;' \
+                'random=true;max_length=50'
 API_KEY: str = get_api_key()
 
 

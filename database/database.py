@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
-from environs import Env
-from typing import Dict, Set, List
+from typing import Dict, List
 
 RUS = 'rus'
 ENG = 'eng'
@@ -9,23 +8,24 @@ NORMAL = 'normal'
 HARD = 'hard'
 TAU = 'tau'
 
+
 @dataclass
 class Game:
     is_in_game: bool = False
     language: str = RUS
     level: str = NORMAL
     time: int = 60
-    score_to_win: int = 100 
-    pass_tax : bool = False
+    score_to_win: int = 100
+    pass_tax: bool = False
     time_is_over: bool = False
-    current_team: int = 0 
+    current_team: int = 0
     current_word: int = 0
     previous_word: str = ''
     text: str = ''
     teams: Dict = field(default_factory=dict)
     game_words: List = field(default_factory=list)
     passed_words: List = field(default_factory=list)
-    
+
     def reset_all(self):
         self.language = RUS
         self.level = NORMAL
@@ -33,15 +33,15 @@ class Game:
         self.time = 60
         self.pass_tax = False
 
-    def set_game_over (self):
+    def set_game_over(self):
         self.is_in_game = False
         self.time_is_over = False
-        self.current_team: int = 0 
-        previous_word: str = ''
-        text: str = ''
-        teams = dict()
-        game_words = list()
-        passed_words = list()
+        self.current_team: int = 0
+        self.previous_word: str = ''
+        self.text: str = ''
+        self.teams = dict()
+        self.game_words = list()
+        self.passed_words = list()
 
     def set_previous_word(self, word: str):
         self.previous_word = word
@@ -64,46 +64,45 @@ class Game:
     def set_text(self, text: str):
         self.text = text
 
-    def get_text(self) -> int:
+    def get_text(self) -> str:
         return self.text
 
     def set_game_status(self, is_in_game: bool):
         self.is_in_game = is_in_game
 
-
     def get_game_status(self) -> bool:
         return self.is_in_game
-    
+
     def set_language(self, language: str):
         self.language = language
-    
+
     def get_language(self) -> str:
         return self.language
 
     def set_level(self, level: str):
         self.level = level
-    
+
     def get_level(self) -> str:
         return self.level
-        
+
     def set_time(self, time: int):
         self.time = time
 
-    def get_time(self):
+    def get_time(self) -> int:
         return self.time
 
     def set_time_is_over(self, is_over: bool):
         self.time_is_over = is_over
 
-    def get_time_is_over(self):
+    def get_time_is_over(self) -> bool:
         return self.time_is_over
-    
+
     def set_score_to_win(self, points: int):
         self.score_to_win = points
 
     def get_score_to_win(self) -> int:
         return self.score_to_win
-    
+
     def set_pass_tax(self, tax: bool):
         self.pass_tax = tax
 
@@ -112,19 +111,19 @@ class Game:
             self.current_team = 1
         else:
             self.current_team = self.current_team % len(self.teams) + 1
-    
+
     def get_current_team(self) -> int:
         return self.current_team
 
     def move_current_word(self):
         self.current_word += 1
-    
+
     def get_current_word(self) -> int:
         return self.current_word
 
     def reset_current_word(self):
         self.current_word = 1
-    
+
     def add_passed_word(self, word: str):
         self.passed_words.append(word)
 
@@ -133,35 +132,26 @@ class Game:
 
     def reset_passed_words(self):
         self.passed_words = list()
-    # def get_winner(self) -> Dict:
-    #     return self.winner
 
-
-    # def set_winner(self, name, score):
-    #     self.winner['name'] = name
-    #     self.winner['score'] = score
-    
-    def init_teams(self, teams_names: List): #убрать strip
-        self.teams = {i: {'name': team, 'score': 0} for i, team in
-        enumerate(teams_names, start = 1) if len(team) > 0}
-    
+    def init_teams(self, teams_names: List):
+        self.teams = ({i: {'name': team, 'score': 0} for i, team in enumerate(
+                    teams_names, start=1) if len(team) > 0})
 
     def get_teams(self) -> Dict:
         return self.teams
 
     def calculate_score(self, team: int, guess: int = 0, pas: int = 0):
         self.teams[team]['score'] += (guess - self.pass_tax * pas)
-    
-    def get_info(self):
+
+    def get_info(self) -> str:
         if len(self.teams) == 0:
             return 'Нет зарегестрированных команд!'
-        teams_info_list: List = [' '.join([str(i) + '.',
-                                self.teams[i]['name'] + ':',
-                                str(self.teams[i]['score'])])
-                                for i in range(1, 1 + len(self.teams))]
-        info: str = '\n'.join(teams_info_list)
+        teams_info: List
+        teams_info = [' '.join([str(i) + '.', self.teams[i]['name'] + ':',
+                                str(self.teams[i]['score'])]) for i in range(
+                                    1, 1 + len(self.teams))]
+        info: str = '\n'.join(teams_info)
         return info
-
 
 
 def load_list(path: str) -> Dict:
@@ -185,7 +175,8 @@ def load_words() -> Dict:
     words[TAU][EASY] = load_list('database/tau_easy.txt')
     words[TAU][NORMAL] = load_list('database/tau_normal.txt')
     words[TAU][HARD] = load_list('database/tau_hard.txt')
-    return(words)
+    return words
+
 
 words: Dict = load_words()
 users_db: Dict = {}
