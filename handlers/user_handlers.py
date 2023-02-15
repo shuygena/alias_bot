@@ -12,7 +12,8 @@ from keyboards.game_settings import (
 
 
 class FSMFillForm(StatesGroup):
-    fill_teams_names = State()
+    # in_game = State()
+    set_teams_names = State()
     set_language = State()
     set_level = State()
     set_pass_tax = State()
@@ -41,12 +42,12 @@ async def process_info_command(message: Message):
 
 async def process_game_command(message: Message):
     await message.answer(LEXICON[message.text])
-    await FSMFillForm.fill_teams_names.set()
+    await FSMFillForm.set_teams_names.set()
 
 
 async def process_game_press(callback: CallbackQuery):
     await callback.message.answer(LEXICON['/game'])
-    await FSMFillForm.fill_teams_names.set()
+    await FSMFillForm.set_teams_names.set()
 
 
 async def warning_not_names(message: Message):
@@ -59,6 +60,7 @@ async def game_start(message: Message, state: FSMContext):
     names_list: List = message.text.split('\n')
     users_db[user_id].init_teams(names_list)
     users_db[user_id].set_game_status(True)
+    
     users_db[user_id].move_current_team()
     users_db[user_id].reset_current_word()
     users_db[user_id].set_time_is_over(False)
@@ -80,7 +82,8 @@ async def set_language(callback: CallbackQuery, state: FSMContext):
     users_db[user_id].set_language(language)
     await callback.answer()
     await callback.message.edit_text(
-        text=LEXICON['/set_language'] + '\n\n⚙️ <b>Настройки сохранены!</b>')
+        text=LEXICON['/set_language'] +
+        '\n\n⚙️ <b>Настройки сохранены!</b> /game')
 
 
 async def warning_not_language(message: Message):
@@ -99,7 +102,8 @@ async def set_level(callback: CallbackQuery, state: FSMContext):
     users_db[user_id].set_level(level)
     await callback.answer()
     await callback.message.edit_text(
-        text=callback.message.text + '\n\n⚙️ <b>Настройки сохранены!</b>')
+        text=callback.message.text +
+        '\n\n⚙️ <b>Настройки сохранены!</b> /game')
 
 
 async def warning_not_level(message: Message):
@@ -121,7 +125,8 @@ async def set_pass_tax(callback: CallbackQuery, state: FSMContext):
         users_db[user_id].set_pass_tax(False)
     await callback.answer()
     await callback.message.edit_text(
-        text=callback.message.text + '\n\n⚙️ <b>Настройки сохранены!</b>')
+        text=callback.message.text +
+        '\n\n⚙️ <b>Настройки сохранены!</b> /game')
 
 
 async def warning_not_tax(message: Message):
@@ -138,7 +143,7 @@ async def set_time(message: Message, state: FSMContext):
     user_id: int = message.from_user.id
     time: str = int(message.text)
     users_db[user_id].set_time(time)
-    await message.answer('⚙️ <b>Настройки сохранены!</b>')
+    await message.answer('⚙️ <b>Настройки сохранены!</b> /game')
 
 
 async def warning_not_time(message: Message):
@@ -155,7 +160,7 @@ async def set_score_to_win(message: Message, state: FSMContext):
     user_id: int = message.from_user.id
     score_to_win: str = int(message.text)
     users_db[user_id].set_score_to_win(score_to_win)
-    await message.answer('⚙️ <b>Настройки сохранены!</b>')
+    await message.answer('⚙️ <b>Настройки сохранены!</b> /game')
 
 
 async def warning_not_score_to_win(message: Message):
@@ -163,7 +168,7 @@ async def warning_not_score_to_win(message: Message):
 
 
 async def process_set_reset_command(message: Message):
-    await message.answer('⚙️ <b>Настройки сброшены!</b>')
+    await message.answer('⚙️ <b>Настройки сброшены!</b> /game')
     user_id: int = message.from_user.id
     users_db[user_id].reset_all()
 
@@ -201,7 +206,7 @@ def register_user_handlers(dp: Dispatcher):
 
     dp.register_message_handler(
         game_start, lambda x: len(x.text) > 0 and len(x.text.split('\n')) < 5,
-        state=FSMFillForm.fill_teams_names)
+        state=FSMFillForm.set_teams_names)
     dp.register_message_handler(
         set_time, lambda x: x.text.isdigit() and 10 <= int(x.text) <= 300,
         state=FSMFillForm.set_time)
@@ -212,7 +217,7 @@ def register_user_handlers(dp: Dispatcher):
 
     dp.register_message_handler(
         warning_not_names, content_types='any',
-        state=FSMFillForm.fill_teams_names)
+        state=FSMFillForm.set_teams_names)
     dp.register_message_handler(
         warning_not_language, content_types='any',
         state=FSMFillForm.set_language)
