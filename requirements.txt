@@ -1,3 +1,4 @@
 aiogram==2.24
-environs==9.5.0
 aioredis==2.0.1
+environs==9.5.0
+redis==4.5.1
