@@ -2,10 +2,9 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
-from config_data.config import Config, load_config  # i need it?
-# from database.database import words, users_db, RUS, ENG, EASY, NORMAL, HARD
+from config_data.config import Config, load_config
 from keyboards.main_menu import set_main_menu
 from handlers.user_handlers import register_user_handlers
 from handlers.game_handlers import register_game_handlers
@@ -26,7 +25,7 @@ async def main():
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s '
                u'[%(asctime)s] - %(name)s - %(message)s')
     logger.info('Starting bot')
-    storage: MemoryStorage = MemoryStorage()
+    storage: RedisStorage2 = RedisStorage2('localhost', 6379, db=0)
     config: Config = load_config()
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     dp: Dispatcher = Dispatcher(bot, storage=storage)
